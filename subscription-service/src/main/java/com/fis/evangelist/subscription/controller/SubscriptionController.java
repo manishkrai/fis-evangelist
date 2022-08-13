@@ -53,4 +53,20 @@ public class SubscriptionController {
 		log.info("Inside getSubscription method of SubscriptionController");
 		return subscriptionService.getSubscription(subscriberName);
 	}
+	
+	@PostMapping("/feign")
+	public ResponseEntity<Subscription> addSubscriptionWithFeign(@RequestBody Subscription subscription) {
+		log.info("Inside addSubscription method of SubscriptionController");
+		HttpStatus status = HttpStatus.CREATED;
+		Subscription updatedSubscription = null;
+		try
+		{
+			updatedSubscription = subscriptionService.addSubscriptionWithFeign(subscription);
+		}
+		catch(NoBookAvailableException e) {
+			status = HttpStatus.UNPROCESSABLE_ENTITY;
+		}
+		
+		return new ResponseEntity<>(updatedSubscription, status);		
+	}
 }
