@@ -24,7 +24,7 @@ public class Book {
 	private String bookId;
 	private String name;
 	private String author;
-	private Long copiesAvailable;
-	private Long totalCopies;
+	private int copiesAvailable;
+	private int totalCopies;
 
 }
