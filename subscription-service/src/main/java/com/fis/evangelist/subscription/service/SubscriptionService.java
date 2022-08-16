@@ -13,11 +13,15 @@ import com.fis.evangelist.subscription.entity.Subscription;
 import com.fis.evangelist.subscription.feign.BookRestConsumer;
 import com.fis.evangelist.subscription.repository.SubscriptionRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class SubscriptionService {
+	
+	private static final String RESILIENCE4J_INSTANCE_NAME = "subscriptionService";
+	private static final String FALLBACK_METHOD = "fallback";
 
 	@Autowired
 	private SubscriptionRepository subscriptionRepository;
@@ -29,6 +33,7 @@ public class SubscriptionService {
     private BookRestConsumer consumer;
 	
 	@Transactional(rollbackFor = NoBookAvailableException.class)
+	@CircuitBreaker(name = RESILIENCE4J_INSTANCE_NAME, fallbackMethod = FALLBACK_METHOD)
 	public Subscription addSubscription(Subscription subscription) throws NoBookAvailableException {
 		log.info("Inside addSubscription method of SubscriptionService");
 		Book book = restTemplate.getForObject("http://localhost:9001/books/getBook/" + subscription.getBookId() , Book.class);
@@ -42,6 +47,7 @@ public class SubscriptionService {
 	}
 	
 	@Transactional(rollbackFor = NoBookAvailableException.class)
+	@CircuitBreaker(name = RESILIENCE4J_INSTANCE_NAME, fallbackMethod = FALLBACK_METHOD)
 	public Subscription addSubscriptionWithFeign(Subscription subscription) throws NoBookAvailableException {
 		log.info("Inside addSubscription method of SubscriptionService");
 		Book book = consumer.getBook(subscription.getBookId());
@@ -63,5 +69,8 @@ public class SubscriptionService {
 		log.info("Inside getAllSubscriptions method of SubscriptionService");
 		return subscriptionRepository.getBySubscriberName(subscriberName);
 	}
-
+	
+	public Subscription fallback(Subscription subscription) throws NoBookAvailableException {
+		throw new NoBookAvailableException("Book service is not available.");
+	}
 }

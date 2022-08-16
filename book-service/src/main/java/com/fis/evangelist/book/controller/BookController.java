@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fis.evangelist.book.DuplicateBookException;
 import com.fis.evangelist.book.entity.Book;
 import com.fis.evangelist.book.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,16 @@ public class BookController {
 	@PostMapping("/saveBook")
 	public ResponseEntity<Book> saveBook(@RequestBody Book book) {
 		log.info("Inside saveBook method of BookController");
+		Book updatedBook = null;
 		HttpStatus status = HttpStatus.CREATED;
-		Book updatedBook = bookService.saveBook(book);
-		if(updatedBook == null) {
-			status = HttpStatus.BAD_REQUEST;
+		try
+		{
+			updatedBook = bookService.saveBook(book);
 		}
-				
+		catch(DuplicateBookException e) {
+			status = HttpStatus.CONFLICT;
+		}
+		
 		return new ResponseEntity<>(updatedBook, status);		
 	}
 	

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fis.evangelist.book.DuplicateBookException;
 import com.fis.evangelist.book.entity.Book;
 import com.fis.evangelist.book.repository.BookRepository;
 
@@ -17,8 +18,12 @@ public class BookService {
 	@Autowired
 	private BookRepository bookRepository;
 	
-	public Book saveBook(Book book) {
+	public Book saveBook(Book book) throws DuplicateBookException {
 		log.info("Inside saveBook method of BookService");
+		Book availableBook= bookRepository.findByBookId(book.getBookId());
+		if(availableBook != null) {
+			throw new DuplicateBookException("Book is already added.");
+		}
 		return bookRepository.save(book);
 	}
 	
