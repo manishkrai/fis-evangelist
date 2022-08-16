@@ -16,6 +16,7 @@ public class BookService {
 
 	@Autowired
 	private BookRepository bookRepository;
+	
 	public Book saveBook(Book book) {
 		log.info("Inside saveBook method of BookService");
 		return bookRepository.save(book);

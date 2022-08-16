@@ -19,7 +19,13 @@ Below approaches are being used for inter communication between the Microservice
 	
 	2. Open Feign
 	
-Service names are being resolved using Service Registry for Feign call.
+Service names are being resolved using Service Registry for Feign calls.
+
+
+Added JUNIT Test cases for service and controller layers for following projects -
+
+  Book Microservice
+  Subscription Microservice
 
 
 

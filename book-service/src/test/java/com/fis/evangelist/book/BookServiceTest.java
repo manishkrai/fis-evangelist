@@ -20,13 +20,13 @@ import com.fis.evangelist.book.service.BookService;
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
-	@Mock private BookRepository bookRepository;
+	@Mock 
+	private BookRepository bookRepository;
 	
 	@InjectMocks
     private BookService bookService;
 	
 	private Book book;
-	private List<Book> books;
 	
 	@BeforeEach
     public void setup(){
@@ -37,36 +37,42 @@ public class BookServiceTest {
 		this.book.setAuthor("Ross Suarez");
 		this.book.setCopiesAvailable(2);
 		this.book.setTotalCopies(2);
-		
-		Mockito.lenient().when(this.bookRepository.save(book))
-        .thenReturn(this.book);
-		
-		this.books = new ArrayList<Book>();
-		this.books.add(this.book);
-		
-		Mockito.lenient().when(this.bookRepository.findAll())
-        .thenReturn(this.books);
-		
-		Mockito.lenient().when(this.bookRepository.findByBookId("B1212"))
-        .thenReturn(this.book);
     }
 	
-	@Test void saveBook() {
+	@Test 
+	void saveBook() {
+		Mockito.lenient().when(this.bookRepository.save(this.book))
+        .thenReturn(this.book);
+		
 		Book book = this.bookService.saveBook(this.book);
 		assertThat(book).isNotNull();
 	}
 	
-	@Test void getAllBooks() {
-		List<Book> books = this.bookService.getAllBooks();
-		assertThat(books.size()).isGreaterThan(0);
+	@Test 
+	void getAllBooks() {
+		List<Book> books = new ArrayList<Book>();
+		books.add(this.book);
+		
+		Mockito.lenient().when(this.bookRepository.findAll())
+        .thenReturn(books);
+		List<Book> returnedBooks = this.bookService.getAllBooks();
+		assertThat(returnedBooks.size()).isGreaterThan(0);
 	}
 	
-	@Test void getBook() {
+	@Test 
+	void getBook() {
+		Mockito.lenient().when(this.bookRepository.findByBookId("B1212"))
+        .thenReturn(this.book);
+		
 		Book book = this.bookService.getBook("B1212");
 		assertThat(book).isNotNull();
 	}
 	
-	@Test void getBookThatNotExists() {
+	@Test 
+	void getBookThatNotExists() {
+		Mockito.lenient().when(this.bookRepository.findByBookId("B1212"))
+        .thenReturn(null);
+		
 		Book book = this.bookService.getBook("B12122");
 		assertThat(book).isNull();
 	}

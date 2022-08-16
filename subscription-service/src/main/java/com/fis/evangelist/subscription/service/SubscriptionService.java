@@ -34,7 +34,7 @@ public class SubscriptionService {
 		Book book = restTemplate.getForObject("http://localhost:9001/books/getBook/" + subscription.getBookId() , Book.class);
 		if(book != null && book.getCopiesAvailable() > 0) {
 			book.setCopiesAvailable(book.getCopiesAvailable() - 1);
-			book = restTemplate.postForEntity("http://localhost:9001/books/saveBook", book, Book.class).getBody();
+			book = restTemplate.postForObject("http://localhost:9001/books/saveBook", book, Book.class);
 			return subscriptionRepository.save(subscription);
 		} else {
 			throw new NoBookAvailableException("Book not available.");
