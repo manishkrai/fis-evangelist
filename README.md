@@ -28,6 +28,13 @@ Added JUNIT Test cases for service and controller layers for following projects 
 
 	2. Subscription Microservice
 
+Added Rest Assured Test cases for following service -
+
+	1. Book Microservice
 
 
+Added Postman call for following services -
 
+	1. Book Microservice
+
+	2. Subscription Microservice
