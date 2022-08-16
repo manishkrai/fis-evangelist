@@ -24,8 +24,8 @@ Service names are being resolved using Service Registry for Feign calls.
 
 Added JUNIT Test cases for service and controller layers for following projects -
 
-  Book Microservice
-  Subscription Microservice
+  1. Book Microservice
+  2. Subscription Microservice
 
 
 
