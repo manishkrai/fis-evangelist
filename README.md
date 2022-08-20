@@ -32,7 +32,6 @@ Added Rest Assured Test cases for following service -
 
 	1. Book Microservice
 
-
 Added Postman call for following services -
 
 	1. Book Microservice
@@ -43,3 +42,12 @@ Added circuit breaker using Resilience4j for following service -
 
 	1. Subscription Microservice
 
+Added Postman API Testing sample that can be directly uploaded into Postman and can be tested after running all 4 endpoints in below order -
+	
+	1. Service Registry
+	
+	2. API Gateway
+	
+	3. Book Microservice
+	
+	4. Subscription Microservice
