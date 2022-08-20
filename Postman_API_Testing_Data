@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "16b0cd87-d249-407a-bad1-1fba0af64f35",
+		"name": "FIS-Evangelist-LMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9035926"
+	},
+	"item": [
+		{
+			"name": "AddBook - History of Amazon Valley",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bookId\" : \"B1212\",\r\n    \"name\" : \"History of Amazon Valley\",\r\n    \"author\" : \"Ross Suarez\",\r\n    \"copiesAvailable\" : \"2\",\r\n    \"totalCopies\" : \"2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9001/books/saveBook",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"books",
+						"saveBook"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddBook - Language Fundamentals -WithAPIgateway",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bookId\" : \"B4232\",\r\n    \"name\" : \"Language Fundamentals\",\r\n    \"author\" : \"H S Parkmay\",\r\n    \"copiesAvailable\" : \"5\",\r\n    \"totalCopies\" : \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9191/books/saveBook",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9191",
+					"path": [
+						"books",
+						"saveBook"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBooks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bookId\" : \"B4232\",\r\n    \"name\" : \"Language Fundamentals\",\r\n    \"author\" : \"H S Parkmay\",\r\n    \"copiesAvailable\" : \"5\",\r\n    \"totalCopies\" : \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9001/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBook",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bookId\" : \"B4232\",\r\n    \"name\" : \"Language Fundamentals\",\r\n    \"author\" : \"H S Parkmay\",\r\n    \"copiesAvailable\" : \"5\",\r\n    \"totalCopies\" : \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9001/books/getBook/B4232",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"books",
+						"getBook",
+						"B4232"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Subscription",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subscriberName\" : \"Manish Rai\",\r\n    \"bookId\" : \"B1212\",\r\n    \"dateSubscribed\" : \"2022-08-13\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9002/subscriptions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"subscriptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Subscription - With Feign",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subscriberName\" : \"Mike\",\r\n    \"bookId\" : \"B4232\",\r\n    \"dateSubscribed\" : \"2022-08-13\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9002/subscriptions/feign",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"subscriptions",
+						"feign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSubscriptions -WithAPIgateway",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subscriberName\" : \"Manish\",\r\n    \"bookId\" : \"B1212\",\r\n    \"dateSubscribed\" : \"2022-08-13\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9191/subscriptions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9191",
+					"path": [
+						"subscriptions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
