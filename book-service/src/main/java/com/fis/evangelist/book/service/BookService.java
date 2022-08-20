@@ -20,9 +20,11 @@ public class BookService {
 	
 	public Book saveBook(Book book) throws DuplicateBookException {
 		log.info("Inside saveBook method of BookService");
-		Book availableBook= bookRepository.findByBookId(book.getBookId());
-		if(availableBook != null) {
-			throw new DuplicateBookException("Book is already added.");
+		if(book.getId() == null) {
+			Book availableBook= bookRepository.findByBookId(book.getBookId());
+			if(availableBook != null) {
+				throw new DuplicateBookException("Book is already added.");
+			}
 		}
 		return bookRepository.save(book);
 	}

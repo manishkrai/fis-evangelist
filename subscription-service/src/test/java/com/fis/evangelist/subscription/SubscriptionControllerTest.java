@@ -96,7 +96,7 @@ public class SubscriptionControllerTest {
 	
 	@Test 
 	void addSubscriptionWithFeign() throws Exception {	
-		Mockito.when(subscriptionService.addSubscription(ArgumentMatchers.any())).thenReturn(this.subscription);		
+		Mockito.when(subscriptionService.addSubscriptionWithFeign(ArgumentMatchers.any())).thenReturn(this.subscription);		
 		
 		String json = mapper.writeValueAsString(this.subscription);
         mockMvc.perform(post("/subscriptions/feign")

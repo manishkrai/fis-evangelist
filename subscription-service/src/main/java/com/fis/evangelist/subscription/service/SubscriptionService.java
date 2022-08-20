@@ -3,6 +3,7 @@ package com.fis.evangelist.subscription.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -60,7 +61,8 @@ public class SubscriptionService {
 		if(book != null && book.getCopiesAvailable() > 0) {
 			book.setCopiesAvailable(book.getCopiesAvailable() - 1);
 			try {
-			book = consumer.saveBook(book).getBody();
+			ResponseEntity<Book> response = consumer.saveBook(book);
+			book = response.getBody();
 			}
 			catch (HttpStatusCodeException se) {
 				  log.debug(se.getResponseBodyAsString()); 
