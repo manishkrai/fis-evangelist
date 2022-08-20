@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fis.evangelist.subscription.NoBookAvailableException;
@@ -39,7 +40,12 @@ public class SubscriptionService {
 		Book book = restTemplate.getForObject("http://localhost:9001/books/getBook/" + subscription.getBookId() , Book.class);
 		if(book != null && book.getCopiesAvailable() > 0) {
 			book.setCopiesAvailable(book.getCopiesAvailable() - 1);
+			try {
 			book = restTemplate.postForObject("http://localhost:9001/books/saveBook", book, Book.class);
+			}
+			catch (HttpStatusCodeException se) {
+				  log.debug(se.getResponseBodyAsString()); 
+			}
 			return subscriptionRepository.save(subscription);
 		} else {
 			throw new NoBookAvailableException("Book not available.");
@@ -53,7 +59,12 @@ public class SubscriptionService {
 		Book book = consumer.getBook(subscription.getBookId());
 		if(book != null && book.getCopiesAvailable() > 0) {
 			book.setCopiesAvailable(book.getCopiesAvailable() - 1);
-			book = consumer.saveBook(book);
+			try {
+			book = consumer.saveBook(book).getBody();
+			}
+			catch (HttpStatusCodeException se) {
+				  log.debug(se.getResponseBodyAsString()); 
+			}
 			return subscriptionRepository.save(subscription);
 		} else {
 			throw new NoBookAvailableException("Book not available.");
@@ -70,7 +81,7 @@ public class SubscriptionService {
 		return subscriptionRepository.getBySubscriberName(subscriberName);
 	}
 	
-	public Subscription fallback(Subscription subscription) throws NoBookAvailableException {
+	public Subscription fallback(Subscription subscription, Throwable t) throws NoBookAvailableException {
 		throw new NoBookAvailableException("Book service is not available.");
 	}
 }

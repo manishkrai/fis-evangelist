@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fis.evangelist.subscription.VO.Book;
@@ -101,7 +103,7 @@ public class SubscriptionServiceTest {
         .thenReturn(this.book);
 				
 		Mockito.lenient().when(this.consumer.saveBook(this.book))
-        .thenReturn(this.book);
+        .thenReturn(new ResponseEntity<Book>(this.book, HttpStatus.CREATED));
 		
 		Mockito.lenient().when(this.subscriptionRepository.save(this.subscription))
         .thenReturn(this.subscription);
