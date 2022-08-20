@@ -38,3 +38,8 @@ Added Postman call for following services -
 	1. Book Microservice
 
 	2. Subscription Microservice
+	
+Added circuit breaker using Resilience4j for following service -
+
+	1. Subscription Microservice
+
