@@ -24,7 +24,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fis.evangelist.book.controller.BookController;
 import com.fis.evangelist.book.entity.Book;
-import com.fis.evangelist.book.service.BookService;
+import com.fis.evangelist.book.serviceimpl.BookServiceImpl;
+import com.fis.evangelist.model.BookRequest;
+import com.fis.evangelist.model.BookResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class BookControllerTest {
@@ -33,32 +35,40 @@ public class BookControllerTest {
 	private BookController bookController;
 	
 	@Mock
-    private BookService bookService;
+    private BookServiceImpl bookService;
 	
 	private MockMvc mockMvc;
 	
-	private Book book;
+	private BookRequest bookRequest;
+	
+	private BookResponse bookResponse;
 	
 	private static ObjectMapper mapper = new ObjectMapper();
 	
 	@BeforeEach
     public void setup(){
-		this.book = new Book();
-		this.book.setId(1L);
-		this.book.setBookId("B1212");
-		this.book.setName("History of Amazon Valley");
-		this.book.setAuthor("Ross Suarez");
-		this.book.setCopiesAvailable(2);
-		this.book.setTotalCopies(2);
+		this.bookRequest = new BookRequest();
+		this.bookRequest.setBookId("B1212");
+		this.bookRequest.setName("History of Amazon Valley");
+		this.bookRequest.setAuthor("Ross Suarez");
+		this.bookRequest.setCopiesAvailable(2);
+		this.bookRequest.setTotalCopies(2);
+		
+		this.bookResponse = new BookResponse();
+		this.bookResponse.setBookId("B1212");
+		this.bookResponse.setName("History of Amazon Valley");
+		this.bookResponse.setAuthor("Ross Suarez");
+		this.bookResponse.setCopiesAvailable(2);
+		this.bookResponse.setTotalCopies(2);
 		
 		this.mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
     }
 	
 	@Test 
 	void saveBook() throws Exception {	
-		Mockito.when(bookService.saveBook(ArgumentMatchers.any())).thenReturn(this.book);		
+		Mockito.when(bookService.saveBook(ArgumentMatchers.any())).thenReturn(this.bookResponse);		
 		
-		 String json = mapper.writeValueAsString(this.book);
+		 String json = mapper.writeValueAsString(this.bookRequest);
         mockMvc.perform(post("/books/saveBook")
         		.contentType(MediaType.APPLICATION_JSON).characterEncoding("utf-8")
                 .content(json).accept(MediaType.APPLICATION_JSON))
@@ -70,12 +80,12 @@ public class BookControllerTest {
 	
 	@Test 
 	void getBooks() throws Exception {	
-		List<Book> books = new ArrayList<Book>();
-		books.add(book);
+		List<BookResponse> books = new ArrayList<BookResponse>();
+		books.add(bookResponse);
 		
 		Mockito.when(bookService.getAllBooks()).thenReturn(books);		
 		
-		 String json = mapper.writeValueAsString(this.book);
+		 String json = mapper.writeValueAsString(this.bookRequest);
         mockMvc.perform(get("/books")
                 .content(json).accept(MediaType.APPLICATION_JSON))
         		.andExpect(status().isOk())
@@ -86,8 +96,8 @@ public class BookControllerTest {
 	
 	@Test 
 	void getBook() throws Exception {	
-		Mockito.when(bookService.getBook(ArgumentMatchers.any())).thenReturn(this.book);
-        mockMvc.perform(get("/books/getBook/{bookId}", "B1212")
+		Mockito.when(bookService.getBook(ArgumentMatchers.any())).thenReturn(this.bookResponse);
+        mockMvc.perform(get("/books/{bookId}", "B1212")
         		.accept(MediaType.APPLICATION_JSON))
         		.andExpect(status().isOk())
         		.andExpect(content().contentType(MediaType.APPLICATION_JSON))

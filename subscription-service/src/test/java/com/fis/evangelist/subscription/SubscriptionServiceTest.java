@@ -1,7 +1,9 @@
 package com.fis.evangelist.subscription;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,13 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.fis.evangelist.subscription.VO.Book;
 import com.fis.evangelist.subscription.entity.Subscription;
 import com.fis.evangelist.subscription.feign.BookRestConsumer;
+import com.fis.evangelist.subscription.mapper.SubscriptionMapper;
+import com.fis.evangelist.subscription.model.BookRequest;
+import com.fis.evangelist.subscription.model.BookResponse;
+import com.fis.evangelist.subscription.model.SubscriptionRequest;
+import com.fis.evangelist.subscription.model.SubscriptionResponse;
 import com.fis.evangelist.subscription.repository.SubscriptionRepository;
 import com.fis.evangelist.subscription.service.SubscriptionService;
 
@@ -35,22 +42,47 @@ public class SubscriptionServiceTest {
 	@Mock
     private BookRestConsumer consumer;
 	
+	@Autowired
+	private SubscriptionMapper subscriptionMapper;
+	
 	@InjectMocks
     private SubscriptionService subscriptionService;
 	
-	private Book book;
+	private BookRequest bookRequest;
+	
+	private BookResponse bookResponse;
+	
+	private SubscriptionRequest subscriptionRequest;
+	
+	private SubscriptionResponse subscriptionResponse;
 	
 	private Subscription subscription;
 	
 	@BeforeEach
     public void setup(){
-		this.book = new Book();
-		this.book.setId(1L);
-		this.book.setBookId("B1212");
-		this.book.setName("History of Amazon Valley");
-		this.book.setAuthor("Ross Suarez");
-		this.book.setCopiesAvailable(2);
-		this.book.setTotalCopies(2);
+		this.bookRequest = new BookRequest();
+		this.bookRequest.setBookId("B1212");
+		this.bookRequest.setName("History of Amazon Valley");
+		this.bookRequest.setAuthor("Ross Suarez");
+		this.bookRequest.setCopiesAvailable(2);
+		this.bookRequest.setTotalCopies(2);
+		
+		this.bookResponse = new BookResponse();
+		this.bookResponse.setBookId("B1212");
+		this.bookResponse.setName("History of Amazon Valley");
+		this.bookResponse.setAuthor("Ross Suarez");
+		this.bookResponse.setCopiesAvailable(2);
+		this.bookResponse.setTotalCopies(2);
+		
+		this.subscriptionRequest = new SubscriptionRequest();
+		this.subscriptionRequest.setSubscriberName("Manish Rai");
+		this.subscriptionRequest.setBookId("B1212");
+		this.subscriptionRequest.setDateSubscribed(new Date());
+		
+		this.subscriptionResponse = new SubscriptionResponse();
+		this.subscriptionResponse.setSubscriberName("Manish Rai");
+		this.subscriptionResponse.setBookId("B1212");
+		this.subscriptionResponse.setDateSubscribed(new Date());
 		
 		this.subscription = new Subscription();
 		this.subscription.setSubscriberName("Manish Rai");
@@ -60,20 +92,20 @@ public class SubscriptionServiceTest {
 	
 	@Test 
 	void addSubscription() {
-		Mockito.when(this.restTemplate.getForObject("http://localhost:9001/books/getBook/" + subscription.getBookId() , Book.class))
-        .thenReturn(this.book);
+		Mockito.when(this.restTemplate.getForObject("http://localhost:9001/books/" + subscriptionRequest.getBookId() , BookResponse.class))
+        .thenReturn(this.bookResponse);
 		
 		
-		Mockito.when(restTemplate.postForObject("http://localhost:9001/books/saveBook", book, Book.class))
-        .thenReturn(this.book);
+		Mockito.when(restTemplate.postForObject("http://localhost:9001/books/save", bookResponse, BookResponse.class))
+        .thenReturn(this.bookResponse);
 		
-		Mockito.when(this.subscriptionRepository.save(this.subscription))
+		Mockito.when(this.subscriptionRepository.save(subscriptionMapper.mapToEntity(subscriptionRequest)))
         .thenReturn(this.subscription);
 		
 		try
 		{
-			Subscription subscription = this.subscriptionService.addSubscription(this.subscription);
-			assertThat(subscription).isNotNull();
+			SubscriptionResponse subscription = this.subscriptionService.addSubscription(this.subscriptionRequest);
+			assertNotNull(subscription);
 		}
 		catch(Exception e)
 		{
@@ -88,8 +120,8 @@ public class SubscriptionServiceTest {
 		
 		try
 		{
-			Subscription subscription = this.subscriptionService.addSubscription(this.subscription);
-			assertThat(subscription).isNotNull();
+			SubscriptionResponse subscription = this.subscriptionService.addSubscription(this.subscriptionRequest);
+			assertNotNull(subscription);
 		}
 		catch(Exception e)
 		{
@@ -100,18 +132,18 @@ public class SubscriptionServiceTest {
 	@Test 
 	void addSubscriptionWithFeign() {		
 		Mockito.lenient().when(this.consumer.getBook(this.subscription.getBookId()))
-        .thenReturn(this.book);
+        .thenReturn(this.bookResponse);
 				
-		Mockito.lenient().when(this.consumer.saveBook(this.book))
-        .thenReturn(new ResponseEntity<Book>(this.book, HttpStatus.CREATED));
+		Mockito.lenient().when(this.consumer.saveBook(this.bookRequest))
+        .thenReturn(new ResponseEntity<BookResponse>(this.bookResponse, HttpStatus.CREATED));
 		
 		Mockito.lenient().when(this.subscriptionRepository.save(this.subscription))
         .thenReturn(this.subscription);
 		
 		try
 		{
-			Subscription subscription = this.subscriptionService.addSubscription(this.subscription);
-			assertThat(subscription).isNotNull();
+			SubscriptionResponse subscription = this.subscriptionService.addSubscription(this.subscriptionRequest);
+			assertNotNull(subscription);
 		}
 		catch(Exception e)
 		{
@@ -122,12 +154,11 @@ public class SubscriptionServiceTest {
 	@Test 
 	void addSubscriptionWithFeignNotAvailable() {
 		Mockito.lenient().when(this.consumer.getBook(this.subscription.getBookId()))
-        .thenReturn(null);
-		
+        .thenReturn(null);		
 		try
 		{
-			Subscription subscription = this.subscriptionService.addSubscription(this.subscription);
-			assertThat(subscription).isNotNull();
+			SubscriptionResponse subscription = this.subscriptionService.addSubscription(this.subscriptionRequest);
+			assertNotNull(subscription);
 		}
 		catch(Exception e)
 		{
@@ -143,31 +174,26 @@ public class SubscriptionServiceTest {
 		Mockito.when(this.subscriptionRepository.findAll())
         .thenReturn(subscriptions);
 		
-		List<Subscription> returnedSubscription = this.subscriptionService.getAllSubscriptions();
+		List<SubscriptionResponse> returnedSubscription = this.subscriptionService.getAllSubscriptions();
 		assertThat(returnedSubscription.size()).isGreaterThan(0);
-		
 	}
 	
 	@Test 
-	void getSubscription() {
-		
+	void getSubscription() {		
 		Mockito.when(this.subscriptionRepository.getBySubscriberName("Manish Rai"))
         .thenReturn(this.subscription);
 		
-		Subscription subscription = this.subscriptionService.getSubscription("Manish Rai");
+		SubscriptionResponse subscription = this.subscriptionService.getSubscription("Manish Rai");
 		assertThat(subscription).isNotNull();
 		
 	}
 	
 	@Test 
-	void getSubscriptionNotExists() {
-			
-			Mockito.when(this.subscriptionRepository.getBySubscriberName("Test"))
-	        .thenReturn(null);
-			
-			Subscription subscription = this.subscriptionService.getSubscription("Test");
-			assertThat(subscription).isNull();
-			
-		}
-	
+	void getSubscriptionNotExists() {			
+		Mockito.when(this.subscriptionRepository.getBySubscriberName("Test"))
+        .thenReturn(null);
+		
+		SubscriptionResponse subscription = this.subscriptionService.getSubscription("Test");
+		assertThat(subscription).isNull();
+	}
 }

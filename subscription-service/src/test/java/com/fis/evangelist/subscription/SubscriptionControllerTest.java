@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fis.evangelist.subscription.controller.SubscriptionController;
 import com.fis.evangelist.subscription.entity.Subscription;
+import com.fis.evangelist.subscription.model.SubscriptionResponse;
 import com.fis.evangelist.subscription.service.SubscriptionService;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,25 +39,32 @@ public class SubscriptionControllerTest {
 		
 	private MockMvc mockMvc;
 	
+	private SubscriptionResponse subscriptionResponse;
+	
 	private Subscription subscription;
 	
 	private static ObjectMapper mapper = new ObjectMapper();
 	
 	@BeforeEach
     public void setup(){
+		this.subscriptionResponse = new SubscriptionResponse();
+		this.subscriptionResponse.setSubscriberName("Manish Rai");
+		this.subscriptionResponse.setBookId("B1212");
+		this.subscriptionResponse.setDateSubscribed(new Date());
+		
+		
 		this.subscription = new Subscription();
 		this.subscription.setSubscriberName("Manish Rai");
 		this.subscription.setBookId("B1212");
 		this.subscription.setDateSubscribed(new Date());
-		
 		this.mockMvc = MockMvcBuilders.standaloneSetup(subscriptionController).build();
     }
 	
 	@Test 
 	void addSubscription() throws Exception {	
-		Mockito.when(subscriptionService.addSubscription(ArgumentMatchers.any())).thenReturn(this.subscription);		
+		Mockito.when(subscriptionService.addSubscription(ArgumentMatchers.any())).thenReturn(this.subscriptionResponse);		
 		
-		String json = mapper.writeValueAsString(this.subscription);
+		String json = mapper.writeValueAsString(this.subscriptionResponse);
         mockMvc.perform(post("/subscriptions")
         		.contentType(MediaType.APPLICATION_JSON).characterEncoding("utf-8")
                 .content(json).accept(MediaType.APPLICATION_JSON))
@@ -68,8 +76,8 @@ public class SubscriptionControllerTest {
 	
 	@Test 
 	void getAllSubscriptions() throws Exception {	
-		List<Subscription> subscriptions = new ArrayList<Subscription>();
-		subscriptions.add(subscription);
+		List<SubscriptionResponse> subscriptions = new ArrayList<SubscriptionResponse>();
+		subscriptions.add(subscriptionResponse);
 		
 		Mockito.when(subscriptionService.getAllSubscriptions()).thenReturn(subscriptions);		
 		
@@ -84,7 +92,7 @@ public class SubscriptionControllerTest {
 	
 	@Test 
 	void getSubscription() throws Exception {	
-		Mockito.when(subscriptionService.getSubscription(ArgumentMatchers.any())).thenReturn(this.subscription);
+		Mockito.when(subscriptionService.getSubscription(ArgumentMatchers.any())).thenReturn(this.subscriptionResponse);
         mockMvc.perform(get("/subscriptions/addSubscription", "Manish Rai")
         		.accept(MediaType.APPLICATION_JSON))
         		.andExpect(status().isOk())
@@ -96,7 +104,7 @@ public class SubscriptionControllerTest {
 	
 	@Test 
 	void addSubscriptionWithFeign() throws Exception {	
-		Mockito.when(subscriptionService.addSubscriptionWithFeign(ArgumentMatchers.any())).thenReturn(this.subscription);		
+		Mockito.when(subscriptionService.addSubscriptionWithFeign(ArgumentMatchers.any())).thenReturn(this.subscriptionResponse);		
 		
 		String json = mapper.writeValueAsString(this.subscription);
         mockMvc.perform(post("/subscriptions/feign")

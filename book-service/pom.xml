@@ -47,6 +47,22 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 		<dependency>
+	        <groupId>org.mapstruct</groupId>
+	        <artifactId>mapstruct</artifactId>
+	        <version>1.4.2.Final</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.mapstruct</groupId>
+	        <artifactId>mapstruct-processor</artifactId>
+	        <version>1.4.2.Final</version>
+	        <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-ui</artifactId>
+		    <version>1.6.3</version>
+		</dependency>
+		<dependency>
 		    <groupId>io.rest-assured</groupId>
 		    <artifactId>rest-assured</artifactId>
 		    <version>4.3.0</version>

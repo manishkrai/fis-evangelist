@@ -8,18 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.fis.evangelist.subscription.VO.Book;
+import com.fis.evangelist.subscription.model.BookRequest;
+import com.fis.evangelist.subscription.model.BookResponse;
 
-@FeignClient(name = "book-service", path="/books")
+@FeignClient(name = "book-service", url = "${book-service.url}")
 public interface BookRestConsumer {
+		
+	@PostMapping("/books/saveBook")
+	ResponseEntity<BookResponse> saveBook(BookRequest bookRequest);
 	
-	@PostMapping("/saveBook")
-	ResponseEntity<Book> saveBook(Book book);
+	@GetMapping("/books")
+	List<BookResponse> getBooks();
 	
-	@GetMapping("")
-	List<Book> getBooks();
-	
-	@GetMapping("/getBook/{bookId}")
-	Book getBook(@PathVariable(value = "bookId")String bookId);
+	@GetMapping("/books/{bookId}")
+	BookResponse getBook(@PathVariable(value = "bookId")String bookId);
 
 }

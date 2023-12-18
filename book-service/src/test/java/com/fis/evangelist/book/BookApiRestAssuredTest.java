@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fis.evangelist.book.controller.BookController;
 import com.fis.evangelist.book.entity.Book;
-import com.fis.evangelist.book.service.BookService;
+import com.fis.evangelist.book.serviceimpl.BookServiceImpl;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -28,7 +28,7 @@ public class BookApiRestAssuredTest {
 	private BookController bookController;
 	
 	@Mock
-    private BookService bookService;
+    private BookServiceImpl bookService;
 	
 	private Book book;
 	
@@ -102,7 +102,7 @@ public class BookApiRestAssuredTest {
 	void getBook() throws Exception {	
         Response response = given()
         		.when()
-        			.get("/books/getBook/B1212")	
+        			.get("/books/B1212")	
         		.then()
         		.extract().response();
         		

@@ -12,10 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fis.evangelist.book.entity.Book;
+import com.fis.evangelist.book.exception.BookNotFoundException;
+import com.fis.evangelist.book.mapper.BookMapper;
 import com.fis.evangelist.book.repository.BookRepository;
-import com.fis.evangelist.book.service.BookService;
+import com.fis.evangelist.book.serviceimpl.BookServiceImpl;
+import com.fis.evangelist.model.BookRequest;
+import com.fis.evangelist.model.BookResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
@@ -24,14 +29,25 @@ public class BookServiceTest {
 	private BookRepository bookRepository;
 	
 	@InjectMocks
-    private BookService bookService;
+    private BookServiceImpl bookService;
+	
+	@Autowired
+	private BookMapper bookMapper;
+	
+	private BookRequest bookRequest;
 	
 	private Book book;
 	
 	@BeforeEach
     public void setup(){
+		this.bookRequest = new BookRequest();
+		this.bookRequest.setBookId("B1212");
+		this.bookRequest.setName("History of Amazon Valley");
+		this.bookRequest.setAuthor("Ross Suarez");
+		this.bookRequest.setCopiesAvailable(2);
+		this.bookRequest.setTotalCopies(2);
+		
 		this.book = new Book();
-		this.book.setId(1L);
 		this.book.setBookId("B1212");
 		this.book.setName("History of Amazon Valley");
 		this.book.setAuthor("Ross Suarez");
@@ -41,11 +57,11 @@ public class BookServiceTest {
 	
 	@Test 
 	void saveBook() {
-		Mockito.lenient().when(this.bookRepository.save(this.book))
+		Mockito.lenient().when(this.bookRepository.save(bookMapper.mapToEntity(bookRequest)))
         .thenReturn(this.book);
 		try
 		{
-			Book book = this.bookService.saveBook(this.book);
+			BookResponse book = this.bookService.saveBook(bookRequest);
 			assertThat(book).isNotNull();
 		}
 		catch(Exception e)
@@ -61,25 +77,25 @@ public class BookServiceTest {
 		
 		Mockito.lenient().when(this.bookRepository.findAll())
         .thenReturn(books);
-		List<Book> returnedBooks = this.bookService.getAllBooks();
+		List<BookResponse> returnedBooks = this.bookService.getAllBooks();
 		assertThat(returnedBooks.size()).isGreaterThan(0);
 	}
 	
 	@Test 
-	void getBook() {
+	void getBook() throws BookNotFoundException {
 		Mockito.lenient().when(this.bookRepository.findByBookId("B1212"))
         .thenReturn(this.book);
 		
-		Book book = this.bookService.getBook("B1212");
+		BookResponse book = this.bookService.getBook("B1212");
 		assertThat(book).isNotNull();
 	}
 	
 	@Test 
-	void getBookThatNotExists() {
+	void getBookThatNotExists() throws BookNotFoundException {
 		Mockito.lenient().when(this.bookRepository.findByBookId("B1212"))
         .thenReturn(null);
 		
-		Book book = this.bookService.getBook("B12122");
+		BookResponse book = this.bookService.getBook("B12122");
 		assertThat(book).isNull();
 	}
 }
